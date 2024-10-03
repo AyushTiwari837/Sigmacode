@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sigma Code Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Moving Neon Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff007f, #00ffbf, #007fff, #ffbf00);
+            background-size: 400% 400%;
+            animation: moveBg 10s infinite linear;
+            z-index: -1;
+        }
+
+        @keyframes moveBg {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(90deg, #ff007f, #00ffbf);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #editorContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        #editorContainer textarea {
+            width: 30%;
+            min-width: 300px;
+            height: 200px;
+            margin: 10px;
+            padding: 10px;
+            border: 2px solid #fff;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            resize: none;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #00FF7F;
+            color: black;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            background-color: #32CD32;
+        }
+
+        .example-container {
+            margin-top: 20px;
+            background-color: white;
+            color: black;
+            padding: 20px;
+            width: 90%;
+            margin: 20px auto;
+            border-radius: 8px;
+        }
+
+        .example-container h3 {
+            color: black;
+        }
+
+        .example-container p {
+            font-weight: bold;
+        }
+
+        .example-container pre {
+            background-color: #f5f5f5;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            position: relative;
+            overflow: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .copy-btn:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sigma Code Editor</h1>
+    </header>
+
+    <div id="editorContainer">
+        <textarea id="htmlEditor" placeholder="Write your HTML code here..."></textarea>
+        <textarea id="cssEditor" placeholder="Write your CSS code here..."></textarea>
+        <textarea id="jsEditor" placeholder="Write your JavaScript code here..."></textarea>
+    </div>
+
+    <div class="button-container">
+        <button id="runBtn">Run Code</button>
+        <button id="refreshBtn">Refresh Code</button>
+        <button id="loadExampleBtn">Load Example</button>
+    </div>
+
+    <div class="example-container">
+        <h3>Try an Example</h3>
+
+        <p>HTML:</p>
+        <pre id="htmlExample">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Color Change Example&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Click the button to change the background color!&lt;/h1&gt;
+    &lt;button id="colorButton"&gt;Change Color&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+<button class="copy-btn" onclick="copyCode('htmlExample')">Copy</button>
+        </pre>
+
+        <p>CSS:</p>
+        <pre id="cssExample">
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background-color: white;
+    transition: background-color 0.5s; /* Smooth transition */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+<button class="copy-btn" onclick="copyCode('cssExample')">Copy</button>
+        </pre>
+
+        <p>JavaScript:</p>
+        <pre id="jsExample">
+document.getElementById('colorButton').addEventListener('click', function() {
+    // Generate a random color
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    document.body.style.backgroundColor = randomColor; // Change the background color
+});
+<button class="copy-btn" onclick="copyCode('jsExample')">Copy</button>
+        </pre>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Sigma Code Editor. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const runBtn = document.getElementById('runBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const loadExampleBtn = document.getElementById('loadExampleBtn');
+        const htmlEditor = document.getElementById('htmlEditor');
+        const cssEditor = document.getElementById('cssEditor');
+        const jsEditor = document.getElementById('jsEditor');
+
+        // Function to run the code
+        function runCode() {
+            const htmlCode = htmlEditor.value || '';
+            const cssCode = "<style>" + (cssEditor.value || '') + "</style>";
+            const jsCode = "<script>" + (jsEditor.value || '') + "<\/script>";
+
+            const output = htmlCode + cssCode + jsCode;
+            const newWindow = window.open('', '', 'width=800,height=600');
+            newWindow.document.open();
+            newWindow.document.write(output);
+            newWindow.document.close();
+        }
+
+        // Function to refresh the code
+        function refreshCode() {
+            htmlEditor.value = '';
+            cssEditor.value = '';
+            jsEditor.value = '';
+        }
+
+        // Function to load example code
+        function loadExample() {
+            htmlEditor.value = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Change Example</title>
+</head>
+<body>
+    <h1>Click the button to change the background color!</h1>
+    <button id="colorButton">Change Color</button>
+</body>
+</html>`;
+            cssEditor.value = `body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background-color: white;
+    transition: background-color 0.5s; /* Smooth transition */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}`;
+            jsEditor.value = `document.getElementById('colorButton').addEventListener('click', function() {
+    // Generate a random color
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    document.body.style.backgroundColor = randomColor; // Change the background color
+});`;
+        }
+
+        // Function to copy code from example
+        function copyCode(exampleId) {
+            const codeElement = document.getElementById(exampleId);
+            let codeText = codeElement.innerText;
+
+            // Remove the Copy button text from the code
+            codeText = codeText.replace(/Copy$/, '').trim();
+
+            const textarea = document.createElement('textarea');
+            textarea.value = codeText;
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                alert('Code copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy code');
+            }
+
+            document.body.removeChild(textarea);
+        }
+
+        runBtn.addEventListener('click', runCode);
+        refreshBtn.addEventListener('click', refreshCode);
+        loadExampleBtn.addEventListener('click', loadExample);
+
+    </script>
+
+</body>
+</html>
